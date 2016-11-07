@@ -1,7 +1,3 @@
+if 123:=x
+if 123 := x
 asd
-asd
-asd
-sa
-aa
-aa
-bbb

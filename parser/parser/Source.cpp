@@ -2,12 +2,24 @@
 #include <string>
 #include <fstream>
 #include <ctype.h>
-using namespace std;
+#include <map>
 
+using namespace std;
+//need function here to clear spaces from string for case 2 
 
 void main()
 {
 	string reservedWords[8] = { "if", "then","else","end","repeat","until","read","write" };
+	map<string,string> symbols;
+	symbols["+"] = "plus";
+	symbols["-"] = "minus";
+	symbols["*"] = "mul";
+	symbols["/"] = "div";
+	symbols["=="] = "equal";
+	symbols["("] = "bracket";
+	symbols[")"] = "bracket";
+	symbols[";"] = "colon";
+	symbols[":="] = "assign";
 	string test;
 	ifstream inputFile ("InputCode.txt");
 	int numberOfLines = 0;
@@ -28,11 +40,12 @@ void main()
 	}
 	i = 0;
 	int pos=0;
-	while (i <= numberOfLines)
+	while (i < numberOfLines)
 	{
 		begin:
 		pos = 0;
-		if(isalnum(lineOfCode[i][0]))
+		//case 1 it is an identifier or number or reserved word
+		if (isalnum(lineOfCode[i][0]) && lineOfCode[i] != "")
 		{
 			while (isalnum(lineOfCode[i][pos]))
 			{
@@ -40,8 +53,14 @@ void main()
 			}
 			//string erasing the part that we want to test on is taken out
 			testString = lineOfCode[i].substr(0, pos);
-			lineOfCode[i].erase(0, pos+1);
-			
+			if(lineOfCode[i][pos]==' ')
+			{
+				lineOfCode[i].erase(0, pos + 1);
+			}
+			else
+			{
+				lineOfCode[i].erase(0, pos);
+			}
 			for (int j = 0; j < 8; j++)
 			{
 				if (testString == reservedWords[j])
@@ -55,12 +74,34 @@ void main()
 			if (isdigit(testString[0]))
 			{
 				cout << testString << "     " << "number";
+				goto begin;
 			}
 			else
 			{
 				cout << testString << "     " << "identifier";
+				goto begin;
 			}
 		}
+		//case 2 is a symbol 
+		else if(lineOfCode[i] != "")
+		{
+			while (!isalnum(lineOfCode[i][pos]))
+			{
+				pos++;
+			}
+			//
+			testString = lineOfCode[i].substr(0, pos);
+			lineOfCode[i].erase(0, pos + 1);
+			map<string, string>::iterator it = symbols.find(testString.substr(0,pos));
+			if (it != symbols.end())
+			{		
+				cout << testString << "     " << it->second;
+			}
+		}
+		
+		if(lineOfCode[i]=="")
+		{
 		i++;
+		}
 	}
 }
